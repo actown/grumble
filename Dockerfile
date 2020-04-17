@@ -1,18 +1,18 @@
 FROM golang:1.14-alpine as builder
 
-COPY . /go/src/mumble.info/grumble
+COPY . /build/
 
-WORKDIR /go/src/mumble.info/grumble
+WORKDIR /build/
 
 RUN apk add --no-cache git build-base
 
-RUN go get -v -t ./... \
-  && go build mumble.info/grumble/cmd/grumble \
+RUN go mod download \
+  && go build ./cmd/grumble/ \
   && go test -v ./...
 
 FROM alpine:edge
 
-COPY --from=builder /go/bin/grumble /usr/bin/grumble
+COPY --from=builder /build/grumble /usr/bin/grumble
 
 ENV DATADIR /data
 
